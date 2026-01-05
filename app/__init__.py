@@ -24,14 +24,20 @@ def create_app(config_class=Config):
                 return None
         return dict(get_jwt_identity=get_identity_safe)
 
-    # Register Blueprints
+    # Register Blueprints with API Versioning
     from app.routes import auth, main, rooms, issues, groups, bookings
-    app.register_blueprint(auth.bp, url_prefix='/auth')
+    
+    # Register Blueprints
+    # Note: The prefixes are handled here in __init__.py, so the route files
+    # only need to define the endpoint (e.g., '/login' becomes '/api/v1/auth/login')
+    app.register_blueprint(auth.bp, url_prefix='/api/v1/auth')
+    app.register_blueprint(rooms.bp, url_prefix='/api/v1/rooms')
+    app.register_blueprint(issues.bp, url_prefix='/api/v1/issues')
+    app.register_blueprint(groups.bp, url_prefix='/api/v1/groups')
+    app.register_blueprint(bookings.bp, url_prefix='/api/v1/bookings')
+    
+    # Main Frontend Routes (Keep at root for browser access)
     app.register_blueprint(main.bp)
-    app.register_blueprint(rooms.bp, url_prefix='/rooms')
-    app.register_blueprint(issues.bp, url_prefix='/issues')
-    app.register_blueprint(groups.bp, url_prefix='/groups')
-    app.register_blueprint(bookings.bp, url_prefix='/bookings')
     
     # Configure JWT to look at cookies
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
