@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}{{ room.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+    <div class="md:flex">
+        <!-- Room Details -->
+        <div class="md:w-1/2 p-8">
+            <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-2">{{ room.building }}</div>
+            <h1 class="block mt-1 text-3xl leading-tight font-bold text-gray-900">{{ room.name }}</h1>
+            <p class="mt-2 text-gray-600">{{ room.room_type }}</p>
+            
+            <div class="mt-6 border-t pt-6">
+                <h3 class="text-lg font-semibold mb-3">Amenities</h3>
+                <ul class="list-disc list-inside text-gray-600">
+                    {% if room.equipment %}
+                        {% for item in room.equipment.split(',') %}
+                            <li>{{ item.strip() }}</li>
+                        {% endfor %}
+                    {% else %}
+                        <li>Standard seating</li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="mt-6">
+                <span class="text-gray-600 font-semibold">Capacity:</span> {{ room.capacity }} People
+            </div>
+        </div>
+        
+        <!-- Booking Form -->
+        <div class="md:w-1/2 bg-gray-50 p-8 border-l border-gray-100">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Book this Room</h2>
+            
+            <form action="{{ url_for('bookings.book_room', room_id=room.id) }}" method="POST">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Start Time</label>
+                    <input type="datetime-local" name="start_time" required
+                           {% if request.args.get('error') %}class="shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                           {% else %}class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"{% endif %}>
+                    {% with messages = get_flashed_messages(category_filter=["error"]) %}
+                        {% if messages %}
+                            <p class="text-red-500 text-xs italic mt-1">{{ messages[0] }}</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">End Time</label>
+                    <input type="datetime-local" name="end_time" required
+                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 ease-in-out transform hover:-translate-y-0.5">
+                    Confirm Booking
+                </button>
+            </form>
+            
+            <div class="mt-6 text-sm text-gray-500">
+                <p><i class="fas fa-info-circle mr-1"></i> Please ensure your booking time does not overlap with existing reservations.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reviews Section -->
+<div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Reviews List -->
+    <div class="bg-white rounded-xl shadow-lg p-8">
+        <h3 class="text-xl font-bold mb-6">Room Reviews</h3>
+        {% if reviews %}
+            <div class="space-y-6">
+                {% for review in reviews %}
+                <div class="border-b pb-4 last:border-0 last:pb-0">
+                    <div class="flex items-center mb-2">
+                        <div class="text-yellow-400 mr-2">
+                            {% for i in range(review.rating) %}<i class="fas fa-star"></i>{% endfor %}
+                            {% for i in range(5 - review.rating) %}<i class="far fa-star"></i>{% endfor %}
+                        </div>
+                        <span class="text-sm text-gray-600">{{ review.user.full_name }}</span>
+                    </div>
+                    <p class="text-gray-700">{{ review.comment }}</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ review.created_at.strftime('%Y-%m-%d') }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 italic">No reviews yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Submit Review -->
+    <div class="bg-white rounded-xl shadow-lg p-8 h-fit">
+        <h3 class="text-xl font-bold mb-6">Leave a Review</h3>
+        <form action="{{ url_for('rooms.submit_feedback', room_id=room.id) }}" method="POST">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Rating</label>
+                <div class="flex space-x-4">
+                    <label class="flex items-center"><input type="radio" name="rating" value="5" checked class="mr-1"> 5</label>
+                    <label class="flex items-center"><input type="radio" name="rating" value="4" class="mr-1"> 4</label>
+                    <label class="flex items-center"><input type="radio" name="rating" value="3" class="mr-1"> 3</label>
+                    <label class="flex items-center"><input type="radio" name="rating" value="2" class="mr-1"> 2</label>
+                    <label class="flex items-center"><input type="radio" name="rating" value="1" class="mr-1"> 1</label>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Comment</label>
+                <textarea name="comment" rows="3" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+            </div>
+            
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                Submit Feedback
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto mt-8 text-center mb-12">
+    <a href="{{ url_for('rooms.list_rooms') }}" class="text-indigo-600 hover:text-indigo-800 font-semibold">
+        &larr; Back to Rooms
+    </a>
+</div>
+{% endblock %}

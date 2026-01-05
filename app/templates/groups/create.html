@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Create Study Group{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
+    <h2 class="text-2xl font-bold mb-6 text-gray-900">Create New Study Group</h2>
+    
+    <form method="POST">
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Group Name</label>
+            <input type="text" name="name" required placeholder="e.g. CS101 Revision Squad"
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Subject / Module</label>
+            <input type="text" name="module" required placeholder="e.g. Computer Science"
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+            <textarea name="description" rows="4" required placeholder="What are the goals of this group?"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        </div>
+        
+        <div class="flex items-center justify-between">
+            <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
+                    type="submit">
+                Create Group
+            </button>
+            <a href="{{ url_for('groups.list_groups') }}" class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-800">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

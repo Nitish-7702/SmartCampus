@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Study Groups{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Study Groups</h1>
+    <a href="{{ url_for('groups.create_group') }}" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+        <i class="fas fa-plus mr-2"></i> Create Group
+    </a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for group in groups %}
+    <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-2">{{ group.name }}</h3>
+        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full mb-4 inline-block">{{ group.module }}</span>
+        
+        <p class="text-gray-600 mb-4 h-16 overflow-hidden">{{ group.description }}</p>
+        
+        <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+            <span class="text-sm text-gray-500"><i class="fas fa-users mr-1"></i> {{ group.members|length }} Members</span>
+            
+            <form action="{{ url_for('groups.join_group', group_id=group.id) }}" method="POST">
+                <button type="submit" class="text-indigo-600 font-semibold hover:text-indigo-800 text-sm">
+                    Join Group &rarr;
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
