@@ -37,7 +37,7 @@ def create_app(config_class=Config):
     app.register_blueprint(bookings.bp, url_prefix='/api/v1/bookings')
     
     # Main Frontend Routes (Keep at root for browser access)
-    app.register_blueprint(main.bp)
+    app.register_blueprint(main.bp, url_prefix='/api/v1')
     
     # Configure JWT to look at cookies
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
